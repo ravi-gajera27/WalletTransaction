@@ -1,6 +1,9 @@
-import handleCart from './handleCart'
-import { combineReducers } from "redux";
+import handleCart from './handleCart';
+import { combineReducers } from 'redux';
+import walletReducer from './wallet';
+
 const rootReducers = combineReducers({
-    handleCart,
-})
-export default rootReducers
+  handleCart,
+  wallet: walletReducer,
+});
+export default rootReducers;

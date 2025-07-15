@@ -1,18 +1,51 @@
-import React from "react";
-import { Footer, Navbar } from "../components";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Footer, Navbar } from '../components';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { ClipLoader } from 'react-spinners';
+
 const Checkout = () => {
   const state = useSelector((state) => state.handleCart);
+  const walletAddress = useSelector((state) => state.wallet.walletAddress);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const paymentHandler = async () => {
+    setIsLoading(true);
+
+    try {
+      // Initiated
+      toast.success('Transaction initiated');
+
+      const tx = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: walletAddress,
+            to: '0x0000000000000000000000000000000000000000',
+            value: '0x0', // 0 ETH
+          },
+        ],
+      });
+
+      await tx.wait();
+
+      toast.success('Transaction confirmed!');
+    } catch (error) {
+      toast.error('Transaction failed!');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const EmptyCart = () => {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h4 className="p-3 display-5">No item in Cart</h4>
-            <Link to="/" className="btn btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i>Continue Shopping
+      <div className='container'>
+        <div className='row'>
+          <div className='col-md-12 py-5 bg-light text-center'>
+            <h4 className='p-3 display-5'>No item in Cart</h4>
+            <Link to='/' className='btn btn-outline-dark mx-4'>
+              <i className='fa fa-arrow-left'></i>Continue Shopping
             </Link>
           </div>
         </div>
@@ -33,23 +66,24 @@ const Checkout = () => {
     });
     return (
       <>
-        <div className="container py-5">
-          <div className="row my-4">
-            <div className="col-md-5 col-lg-4 order-md-last">
-              <div className="card mb-4">
-                <div className="card-header py-3 bg-light">
-                  <h5 className="mb-0">Order Summary</h5>
+        <div className='container py-5'>
+          <div className='row my-4'>
+            <div className='col-md-5 col-lg-4 order-md-last'>
+              <div className='card mb-4'>
+                <div className='card-header py-3 bg-light'>
+                  <h5 className='mb-0'>Order Summary</h5>
                 </div>
-                <div className="card-body">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                      Products ({totalItems})<span>${Math.round(subtotal)}</span>
+                <div className='card-body'>
+                  <ul className='list-group list-group-flush'>
+                    <li className='list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0'>
+                      Products ({totalItems})
+                      <span>${Math.round(subtotal)}</span>
                     </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <li className='list-group-item d-flex justify-content-between align-items-center px-0'>
                       Shipping
                       <span>${shipping}</span>
                     </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                    <li className='list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3'>
                       <div>
                         <strong>Total amount</strong>
                       </div>
@@ -61,218 +95,234 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
-            <div className="col-md-7 col-lg-8">
-              <div className="card mb-4">
-                <div className="card-header py-3">
-                  <h4 className="mb-0">Billing address</h4>
+            <div className='col-md-7 col-lg-8'>
+              <div className='card mb-4'>
+                <div className='card-header py-3'>
+                  <h4 className='mb-0'>Billing address</h4>
                 </div>
-                <div className="card-body">
-                  <form className="needs-validation" novalidate>
-                    <div className="row g-3">
-                      <div className="col-sm-6 my-1">
-                        <label for="firstName" className="form-label">
+                <div className='card-body'>
+                  <form className='needs-validation' novalidate>
+                    <div className='row g-3'>
+                      <div className='col-sm-6 my-1'>
+                        <label for='firstName' className='form-label'>
                           First name
                         </label>
                         <input
-                          type="text"
-                          className="form-control"
-                          id="firstName"
-                          placeholder=""
+                          type='text'
+                          className='form-control'
+                          id='firstName'
+                          placeholder=''
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className='invalid-feedback'>
                           Valid first name is required.
                         </div>
                       </div>
 
-                      <div className="col-sm-6 my-1">
-                        <label for="lastName" className="form-label">
+                      <div className='col-sm-6 my-1'>
+                        <label for='lastName' className='form-label'>
                           Last name
                         </label>
                         <input
-                          type="text"
-                          className="form-control"
-                          id="lastName"
-                          placeholder=""
+                          type='text'
+                          className='form-control'
+                          id='lastName'
+                          placeholder=''
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className='invalid-feedback'>
                           Valid last name is required.
                         </div>
                       </div>
 
-                      <div className="col-12 my-1">
-                        <label for="email" className="form-label">
+                      <div className='col-12 my-1'>
+                        <label for='email' className='form-label'>
                           Email
                         </label>
                         <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          placeholder="you@example.com"
+                          type='email'
+                          className='form-control'
+                          id='email'
+                          placeholder='you@example.com'
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className='invalid-feedback'>
                           Please enter a valid email address for shipping
                           updates.
                         </div>
                       </div>
 
-                      <div className="col-12 my-1">
-                        <label for="address" className="form-label">
+                      <div className='col-12 my-1'>
+                        <label for='address' className='form-label'>
                           Address
                         </label>
                         <input
-                          type="text"
-                          className="form-control"
-                          id="address"
-                          placeholder="1234 Main St"
+                          type='text'
+                          className='form-control'
+                          id='address'
+                          placeholder='1234 Main St'
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className='invalid-feedback'>
                           Please enter your shipping address.
                         </div>
                       </div>
 
-                      <div className="col-12">
-                        <label for="address2" className="form-label">
-                          Address 2{" "}
-                          <span className="text-muted">(Optional)</span>
+                      <div className='col-12'>
+                        <label for='address2' className='form-label'>
+                          Address 2{' '}
+                          <span className='text-muted'>(Optional)</span>
                         </label>
                         <input
-                          type="text"
-                          className="form-control"
-                          id="address2"
-                          placeholder="Apartment or suite"
+                          type='text'
+                          className='form-control'
+                          id='address2'
+                          placeholder='Apartment or suite'
                         />
                       </div>
 
-                      <div className="col-md-5 my-1">
-                        <label for="country" className="form-label">
+                      <div className='col-md-5 my-1'>
+                        <label for='country' className='form-label'>
                           Country
                         </label>
                         <br />
-                        <select className="form-select" id="country" required>
-                          <option value="">Choose...</option>
+                        <select className='form-select' id='country' required>
+                          <option value=''>Choose...</option>
                           <option>India</option>
                         </select>
-                        <div className="invalid-feedback">
+                        <div className='invalid-feedback'>
                           Please select a valid country.
                         </div>
                       </div>
 
-                      <div className="col-md-4 my-1">
-                        <label for="state" className="form-label">
+                      <div className='col-md-4 my-1'>
+                        <label for='state' className='form-label'>
                           State
                         </label>
                         <br />
-                        <select className="form-select" id="state" required>
-                          <option value="">Choose...</option>
+                        <select className='form-select' id='state' required>
+                          <option value=''>Choose...</option>
                           <option>Punjab</option>
                         </select>
-                        <div className="invalid-feedback">
+                        <div className='invalid-feedback'>
                           Please provide a valid state.
                         </div>
                       </div>
 
-                      <div className="col-md-3 my-1">
-                        <label for="zip" className="form-label">
+                      <div className='col-md-3 my-1'>
+                        <label for='zip' className='form-label'>
                           Zip
                         </label>
                         <input
-                          type="text"
-                          className="form-control"
-                          id="zip"
-                          placeholder=""
+                          type='text'
+                          className='form-control'
+                          id='zip'
+                          placeholder=''
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className='invalid-feedback'>
                           Zip code required.
                         </div>
                       </div>
                     </div>
 
-                    <hr className="my-4" />
+                    <hr className='my-4' />
 
-                    <h4 className="mb-3">Payment</h4>
+                    <h4 className='mb-3'>Payment</h4>
 
-                    <div className="row gy-3">
-                      <div className="col-md-6">
-                        <label for="cc-name" className="form-label">
-                          Name on card
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-name"
-                          placeholder=""
-                          required
-                        />
-                        <small className="text-muted">
-                          Full name as displayed on card
-                        </small>
-                        <div className="invalid-feedback">
-                          Name on card is required
+                    {walletAddress ? (
+                      <>
+                        <button
+                          className='w-100 btn btn-primary d-flex justify-content-center align-items-center'
+                          disable={isLoading}
+                          onClick={paymentHandler}
+                        >
+                          <span> Pay with Wallet </span>
+                          {isLoading && <ClipLoader color='#36d7b7' />}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className='row gy-3'>
+                          <div className='col-md-6'>
+                            <label for='cc-name' className='form-label'>
+                              Name on card
+                            </label>
+                            <input
+                              type='text'
+                              className='form-control'
+                              id='cc-name'
+                              placeholder=''
+                              required
+                            />
+                            <small className='text-muted'>
+                              Full name as displayed on card
+                            </small>
+                            <div className='invalid-feedback'>
+                              Name on card is required
+                            </div>
+                          </div>
+
+                          <div className='col-md-6'>
+                            <label for='cc-number' className='form-label'>
+                              Credit card number
+                            </label>
+                            <input
+                              type='text'
+                              className='form-control'
+                              id='cc-number'
+                              placeholder=''
+                              required
+                            />
+                            <div className='invalid-feedback'>
+                              Credit card number is required
+                            </div>
+                          </div>
+
+                          <div className='col-md-3'>
+                            <label for='cc-expiration' className='form-label'>
+                              Expiration
+                            </label>
+                            <input
+                              type='text'
+                              className='form-control'
+                              id='cc-expiration'
+                              placeholder=''
+                              required
+                            />
+                            <div className='invalid-feedback'>
+                              Expiration date required
+                            </div>
+                          </div>
+
+                          <div className='col-md-3'>
+                            <label for='cc-cvv' className='form-label'>
+                              CVV
+                            </label>
+                            <input
+                              type='text'
+                              className='form-control'
+                              id='cc-cvv'
+                              placeholder=''
+                              required
+                            />
+                            <div className='invalid-feedback'>
+                              Security code required
+                            </div>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="col-md-6">
-                        <label for="cc-number" className="form-label">
-                          Credit card number
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-number"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Credit card number is required
-                        </div>
-                      </div>
+                        <hr className='my-4' />
 
-                      <div className="col-md-3">
-                        <label for="cc-expiration" className="form-label">
-                          Expiration
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-expiration"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Expiration date required
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <label for="cc-cvv" className="form-label">
-                          CVV
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-cvv"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Security code required
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr className="my-4" />
-
-                    <button
-                      className="w-100 btn btn-primary "
-                      type="submit" disabled
-                    >
-                      Continue to checkout
-                    </button>
+                        <button
+                          className='w-100 btn btn-primary '
+                          type='submit'
+                          disabled
+                        >
+                          Continue to checkout
+                        </button>
+                      </>
+                    )}
                   </form>
                 </div>
               </div>
@@ -285,8 +335,8 @@ const Checkout = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Checkout</h1>
+      <div className='container my-3 py-3'>
+        <h1 className='text-center'>Checkout</h1>
         <hr />
         {state.length ? <ShowCheckout /> : <EmptyCart />}
       </div>
